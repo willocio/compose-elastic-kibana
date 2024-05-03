@@ -1,0 +1,45 @@
+---
+networks:
+  elastic:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.251.0/24"
+
+
+services:
+  elastic:
+    container_name: elastic
+    image: elasticsearch:8.13.0
+    ports:
+      - 9200:9200
+    networks:
+      elastic:
+        ipv4_address: 172.16.251.250
+    environment:
+      - node.name=elastic
+      - discovery.type=single-node
+
+  kibana:
+    container_name: kibana
+    image: kibana:8.13.0
+    ports:
+      - 5601:5601
+    networks:
+      elastic:
+        ipv4_address: 172.16.251.251
+    environment:
+      - node.name=kibana
+      - elasticsearch_hosts=http://elastic:9200
+    depends_on:
+      - elastic
+
+  # Gerar o token
+  # docker exec -it elastic /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana
+
+  # Gerar o código
+  # docker exec -it kibana /usr/share/kibana/bin/kibana-verification-code
+
+  # Username: elastic
+  # Gerar a senha
+  # docker exec -it elastic /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic
