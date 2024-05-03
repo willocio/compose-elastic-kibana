@@ -6,6 +6,8 @@ networks:
       config:
         - subnet: "172.16.251.0/24"
 
+volumes:
+  elastic-data:
 
 services:
   elastic:
@@ -16,6 +18,8 @@ services:
     networks:
       elastic:
         ipv4_address: 172.16.251.250
+    volumes:
+      - ./elastic-data:/usr/share/elasticsearch/data
     environment:
       - node.name=elastic
       - discovery.type=single-node
